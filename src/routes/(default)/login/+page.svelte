@@ -1,32 +1,26 @@
 <script>
-	import { goto } from '$app/navigation';
-	import { userRegister } from '$lib/api/userApi';
+	import { userLogin } from '$lib/api/UserApi';
 	import { alertError, alertSuccess } from '$lib/SweetAlert';
+	import { goto } from '$app/navigation';
 
-	if (localStorage.getItem('token')) goto('/dashboard/contacts');
+	const token = localStorage.getItem('token');
+	if (token) goto('/dashboard/contacts');
 
 	let user = $state({
 		username: '',
-		name: '',
-		password: '',
-		confirm_password: ''
+		password: ''
 	});
 
 	async function handleSubmit(e) {
 		e.preventDefault();
-
-		if (user.password !== user.confirm_password) {
-			await alertError({ message: 'Passwords do not match' });
-			return;
-		}
-
-		const response = await userRegister(user);
+		const response = await userLogin(user);
 		const responseBody = await response.json();
-		console.log(responseBody);
 
 		if (response.status === 200) {
-			await alertSuccess({ message: 'Account created successfully', fun: () => goto('/login') });
-			// goto('/login');
+			const token = await responseBody.data.token;
+			localStorage.setItem('token', token);
+
+			await alertSuccess({ message: 'Login successful', fun: () => goto('/dashboard/contacts') });
 		} else {
 			await alertError({ message: responseBody.errors });
 		}
@@ -38,14 +32,14 @@
 >
 	<div class="text-center mb-8">
 		<div class="inline-block p-3 bg-gradient rounded-full mb-4">
-			<i class="fas fa-user-plus text-3xl text-white"></i>
+			<i class="fas fa-address-book text-3xl text-white"></i>
 		</div>
 		<h1 class="text-3xl font-bold text-white">Contact Management</h1>
-		<p class="text-gray-300 mt-2">Create a new account</p>
+		<p class="text-gray-300 mt-2">Sign in to your account</p>
 	</div>
 
 	<form onsubmit={handleSubmit}>
-		<div class="mb-4">
+		<div class="mb-5">
 			<label for="username" class="block text-gray-300 text-sm font-medium mb-2">Username</label>
 			<div class="relative">
 				<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -56,32 +50,14 @@
 					id="username"
 					name="username"
 					class="w-full pl-10 pr-3 py-3 bg-gray-700 bg-opacity-50 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-					placeholder="Choose a username"
+					placeholder="Enter your username"
 					required
 					bind:value={user.username}
 				/>
 			</div>
 		</div>
 
-		<div class="mb-4">
-			<label for="name" class="block text-gray-300 text-sm font-medium mb-2">Full Name</label>
-			<div class="relative">
-				<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-					<i class="fas fa-id-card text-gray-500"></i>
-				</div>
-				<input
-					type="text"
-					id="name"
-					name="name"
-					class="w-full pl-10 pr-3 py-3 bg-gray-700 bg-opacity-50 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-					placeholder="Enter your full name"
-					required
-					bind:value={user.name}
-				/>
-			</div>
-		</div>
-
-		<div class="mb-4">
+		<div class="mb-6">
 			<label for="password" class="block text-gray-300 text-sm font-medium mb-2">Password</label>
 			<div class="relative">
 				<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -92,29 +68,9 @@
 					id="password"
 					name="password"
 					class="w-full pl-10 pr-3 py-3 bg-gray-700 bg-opacity-50 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-					placeholder="Create a password"
+					placeholder="Enter your password"
 					required
 					bind:value={user.password}
-				/>
-			</div>
-		</div>
-
-		<div class="mb-6">
-			<label for="confirm_password" class="block text-gray-300 text-sm font-medium mb-2"
-				>Confirm Password</label
-			>
-			<div class="relative">
-				<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-					<i class="fas fa-check-double text-gray-500"></i>
-				</div>
-				<input
-					type="password"
-					id="confirm_password"
-					name="confirm_password"
-					class="w-full pl-10 pr-3 py-3 bg-gray-700 bg-opacity-50 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-					placeholder="Confirm your password"
-					required
-					bind:value={user.confirm_password}
 				/>
 			</div>
 		</div>
@@ -124,16 +80,16 @@
 				type="submit"
 				class="w-full bg-gradient text-white py-3 px-4 rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200 font-medium shadow-lg transform hover:-translate-y-0.5"
 			>
-				<i class="fas fa-user-plus mr-2"></i> Register
+				<i class="fas fa-sign-in-alt mr-2"></i> Sign In
 			</button>
 		</div>
 
 		<div class="text-center text-sm text-gray-400">
-			Already have an account?
+			Don't have an account?
 			<a
-				href="./login/"
+				href="register"
 				class="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200"
-				>Sign in</a
+				>Sign up</a
 			>
 		</div>
 	</form>
