@@ -1,10 +1,7 @@
 <script>
 	/** @type {import('./$types').PageData} */
 	export let data;
-
 	const { contact } = data;
-
-	console.log(contact);
 </script>
 
 <div class="flex items-center mb-6">
