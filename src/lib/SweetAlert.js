@@ -23,3 +23,23 @@ export const alertError = async ({ message, fun = () => {}, timer = 1500, confir
 		fun();
 	});
 };
+
+export const alertComfirm = async ({ message, fun = () => {} }) => {
+	const response = await Swal.fire({
+		icon: 'question',
+		title: 'Confirm',
+		text: message,
+		confirmButtonText: 'Yes',
+		cancelButtonText: 'No',
+		showCancelButton: true,
+		confirmButtonColor: '#d33',
+		cancelButtonColor: '#3085d6'
+	}).then((result) => {
+		if (result.isConfirmed) {
+			fun();
+		}
+		return result;
+	});
+
+	return response.isConfirmed;
+};

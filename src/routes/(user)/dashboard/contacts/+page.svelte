@@ -1,6 +1,7 @@
 <script>
 	import { page } from '$app/state';
-	import { contactList } from '$lib/api/ContactApi';
+	import { contactList, contactRemove } from '$lib/api/ContactApi';
+	import { alertSuccess, alertError, alertComfirm } from '$lib/SweetAlert';
 	import { onMount } from 'svelte';
 
 	const token = localStorage.getItem('token');
@@ -41,6 +42,26 @@
 		e.preventDefault();
 		search.page = 1;
 		await getContactList();
+	}
+
+	let idSelected = $state('');
+
+	async function handleRemove(e, contactId) {
+		e.preventDefault();
+
+		if (!(await alertComfirm({ message: 'Are you sure you want to remove this contact?' }))) return;
+
+		const response = await contactRemove(token, contactId);
+		const responseBody = await response.json();
+
+		if (response.status == 200) {
+			await alertSuccess({
+				message: 'Contact removed successfully',
+				fun: async () => await getContactList()
+			});
+		} else {
+			await alertError({ message: responseBody.errors });
+		}
 	}
 
 	function handleSeachFormToggle() {
@@ -237,12 +258,13 @@
 				</a>
 				<div class="mt-4 flex justify-end space-x-3">
 					<a
-						href="/dashboard/contacs/{contact.id}/edit"
+						href="/dashboard/contacts/{contact.id}/edit"
 						class="px-4 py-2 bg-gradient text-white rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200 font-medium shadow-md flex items-center"
 					>
 						<i class="fas fa-edit mr-2"></i> Edit
 					</a>
 					<button
+						onclick={() => handleRemove(event, contact.id)}
 						class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200 font-medium shadow-md flex items-center"
 					>
 						<i class="fas fa-trash-alt mr-2"></i> Delete
