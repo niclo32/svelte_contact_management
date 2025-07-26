@@ -1,13 +1,12 @@
 <script>
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import { contactList, contactRemove } from '$lib/api/ContactApi';
 	import { alertSuccess, alertError, alertComfirm } from '$lib/SweetAlert';
 	import { onMount } from 'svelte';
 
 	const token = localStorage.getItem('token');
-	if (!token) {
-		goto('/login');
-	}
+
 	const search = $state({
 		name: '',
 		email: '',
@@ -21,8 +20,6 @@
 	async function getContactList() {
 		const response = await contactList(token, search);
 		const responseBody = await response.json();
-
-		console.log(responseBody);
 
 		if (response.status == 200) {
 			contacts = responseBody.data;
@@ -97,8 +94,12 @@
 	}
 
 	onMount(async () => {
-		handleSeachFormToggle();
-		await getContactList();
+		if (!token) {
+			goto('/login');
+		} else {
+			handleSeachFormToggle();
+			await getContactList();
+		}
 	});
 </script>
 
