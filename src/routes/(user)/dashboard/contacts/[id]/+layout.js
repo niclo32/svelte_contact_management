@@ -11,7 +11,8 @@ export async function load({ params }) {
 		if (response.status == 200) {
 			return {
 				contact: responseBody.data,
-				token
+				token,
+				contact_id: params.id
 			};
 		} else {
 			return {
