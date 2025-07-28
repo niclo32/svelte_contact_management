@@ -15,7 +15,6 @@
 
 		const response = await contactUpdate(token, contact.id, contact);
 		const responseBody = await response.json();
-		console.log(responseBody);
 
 		if (response.status == 200) {
 			await alertSuccess({
@@ -124,7 +123,8 @@
 
 			<div class="flex justify-end space-x-4">
 				<a
-					href="/dashboard/contacts"
+					href="#"
+					onclick={() => history.back()}
 					class="px-5 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200 flex items-center shadow-md"
 				>
 					<i class="fas fa-times mr-2"></i> Cancel

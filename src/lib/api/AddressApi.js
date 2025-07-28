@@ -41,6 +41,16 @@ export const addressList = async (token, contact_id) => {
 	});
 };
 
+export const addressDetail = async (token, contact_id, id) => {
+	return fetch(`${import.meta.env.VITE_URL_API}/contacts/${contact_id}/addresses/${id}`, {
+		method: 'GET',
+		headers: {
+			Accept: 'application/json',
+			Authorization: token
+		}
+	});
+};
+
 export const addressRemove = async (token, contact_id, id) => {
 	return fetch(`${import.meta.env.VITE_URL_API}/contacts/${contact_id}/addresses/${id}`, {
 		method: 'DELETE',
